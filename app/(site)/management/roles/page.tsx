@@ -5,20 +5,16 @@ import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@/compone
 import dayjs from "dayjs";
 import { MoreVertical, Search} from "lucide-react";
 import apiClient from "@/libs/apiClient";
-// import { unpack } from "msgpackr";
 
 export default function UserPage() {
     const [selectedKeys, setSelectedKeys] =  useState<Set<number>>(new Set());
     const [data, setData] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     useEffect(() => {
-        const fetchUsers = async () => {
+        const fetch = async () => {
             setIsLoading(true);
             try {
-                // const response = await apiClient.get('/api/v1/users', { responseType: 'arraybuffer' });
-                // const decoded = unpack(new Uint8Array(response.data))
-                // setData(decoded.data.data);
-                const response = await apiClient.get('/api/v1/users');
+                const response = await apiClient.get('/api/v1/roles');
                 setData(response.data.data);
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -26,15 +22,15 @@ export default function UserPage() {
                 setIsLoading(false);
             }
         };
-        fetchUsers();
+        fetch();
     },[])
 
     return (
         <div className="w-full px-10">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-xl font-bold">จัดการข้อมูลผู้ใช้ในระบบ</h1>
-                    <p className="text-sm text-gray-500">เพิ่ม แก้ไข หรือลบข้อมูลผู้ใช้ในระบบ</p>
+                    <h1 className="text-xl font-bold">จัดการข้อมูลบทบาท</h1>
+                    <p className="text-sm text-gray-500">เพิ่ม แก้ไข หรือลบข้อมูลบทบาท</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <div className="relative">
@@ -47,7 +43,7 @@ export default function UserPage() {
                             className="border border-gray-300 rounded px-10 py-2 w-full focus:outline-none focus:ring-0 bg-white"
                         />
                     </div>
-                    <button className="bg-[#849E33] text-white px-4 py-2 rounded hover:bg-[#849E33] cursor-pointer active:scale-95 transition-all duration-200">เพิ่มผู้ใช้</button>
+                    <button className="bg-[#849E33] text-white px-4 py-2 rounded hover:bg-[#849E33] cursor-pointer active:scale-95 transition-all duration-200">เพิ่มบทบาท</button>
                 </div>
             </div>
             <div className="mt-6 ">
@@ -57,11 +53,7 @@ export default function UserPage() {
                     columns={
                         [
                             { key: 'name', header: 'ชื่อ', renderCell: (item) => <span >{item.name}</span> ,sortable: true},
-                            { key: 'username', header: 'ชื่อผู้ใช้', renderCell: (item) => <span >{item.username}</span>,sortable: true },
-                            { key: 'email', header: 'อีเมล', renderCell: (item) => <span >{item.email}</span>,sortable: true },
-                            { key: 'primaryRole', header: 'บทบาท', renderCell: (item) => <span >{item.primaryRole}</span>,sortable: true },
-                            { key: 'lastLogin', header: 'เข้าสู่ระบบล่าสุด', renderCell: (item) => <span >{ dayjs(item.lastLogin).format('DD/MM/YYYY HH:mm:ss')}</span>,sortable: true },
-                            { key: 'createdAt', header: 'สร้างเมื่อ', renderCell: (item) => <span >{ dayjs(item.createdAt).format('DD/MM/YYYY')}</span>,sortable: true },
+                            {key: 'description', header: 'คำอธิบาย', renderCell: (item) => <span >{item.description}</span>,sortable: true },
                             { 
                                 key: '_id', header: 'เพิ่มเติม', renderCell: (item) => 
                                 <>

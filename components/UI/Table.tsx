@@ -19,6 +19,7 @@ type TableColumnDef<T> = {
 
 interface TableProps<T> {
     data: T[]
+    isLoading: boolean
     columns: TableColumnDef<T>[]
     sortDescriptor?: SortDescriptor
     onSortChange?: (descriptor: SortDescriptor) => void
@@ -30,6 +31,7 @@ interface TableProps<T> {
 export default function Table<T>({
     columns,
     data,
+    isLoading,
     sortDescriptor,
     onSortChange,
     selectable = false,
@@ -38,7 +40,7 @@ export default function Table<T>({
 }: TableProps<T>) {
     const [sort, setSort] = useState<SortDescriptor | undefined>(sortDescriptor)
     const [internalSelectedKeys, setInternalSelectedKeys] = useState<Set<number>>(new Set())
-    
+
     const currentSelectedKeys = selectedKeys !== undefined ? selectedKeys : internalSelectedKeys
 
     const handleSort = (columnKey: string) => {
@@ -64,7 +66,7 @@ export default function Table<T>({
 
     const handleSelectAll = (checked: boolean) => {
         const newSelection = checked ? new Set(data.map((_, index) => index)) : new Set<number>()
-        
+
         if (selectedKeys !== undefined && onSelectionChange) {
             onSelectionChange(newSelection)
         } else {
@@ -74,13 +76,13 @@ export default function Table<T>({
 
     const handleSelectRow = (rowIndex: number, checked: boolean) => {
         const newSelection = new Set(currentSelectedKeys)
-        
+
         if (checked) {
             newSelection.add(rowIndex)
         } else {
             newSelection.delete(rowIndex)
         }
-        
+
         if (selectedKeys !== undefined && onSelectionChange) {
             onSelectionChange(newSelection)
         } else {
@@ -119,8 +121,8 @@ export default function Table<T>({
                             <div className="flex items-center justify-start gap-2 py-2 font-normal">
                                 {col.header}
                                 {col.sortable && (
-                                    <button 
-                                        onClick={() => handleSort(col.key)} 
+                                    <button
+                                        onClick={() => handleSort(col.key)}
                                         className="hover:text-blue-600 transition-colors cursor-pointer"
                                     >
                                         {sort?.column === col.key ? (
@@ -140,28 +142,43 @@ export default function Table<T>({
                 </tr>
             </thead>
             <tbody className="bg-white rounded font-light text-sm">
-                {data.map((item, rowIndex) => (
-                    <tr key={rowIndex}>
-                        {selectable && (
-                            <td className="py-1 border-b border-gray-200 text-center">
-                                <input
-                                    type="checkbox"
-                                    checked={currentSelectedKeys.has(rowIndex)}
-                                    onChange={(e) => handleSelectRow(rowIndex, e.target.checked)}
-                                    className="w-4 h-4 cursor-pointer"
-                                />
-                            </td>
-                        )}
-                        {columns.map((col) => (
-                            <td  
-                                key={col.key}  
-                                className={`${col.classCell ? col.classCell : ''} py-1 border-b border-gray-200 `}
-                            >
-                                {col.renderCell ? col.renderCell(item) : (item as any)[col.key]}
-                            </td>
-                        ))}
+                {isLoading ? (
+                    <tr>
+                        <td colSpan={selectable ? columns.length + 1 : columns.length} className="py-4 text-center">
+                            กำลังโหลดข้อมูล...
+                        </td>
                     </tr>
-                ))}
+                ) : (
+                    data.length === 0 ? (
+                        <tr>
+                            <td colSpan={selectable ? columns.length + 1 : columns.length} className="py-4 text-center">
+                                ไม่มีข้อมูลที่จะแสดง
+                            </td>
+                        </tr>
+                    ) : (
+                    data.map((item, rowIndex) => (
+                        <tr key={rowIndex}>
+                            {selectable && (
+                                <td className="py-1 border-b border-gray-200 text-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={currentSelectedKeys.has(rowIndex)}
+                                        onChange={(e) => handleSelectRow(rowIndex, e.target.checked)}
+                                        className="w-4 h-4 cursor-pointer"
+                                    />
+                                </td>
+                            )}
+                            {columns.map((col) => (
+                                <td
+                                    key={col.key}
+                                    className={`${col.classCell ? col.classCell : ''} py-1 border-b border-gray-200 `}
+                                >
+                                    {col.renderCell ? col.renderCell(item) : (item as any)[col.key]}
+                                </td>
+                            ))}
+                        </tr>
+                    )))
+                )}
             </tbody>
         </table>
     )

@@ -2,23 +2,53 @@
 
 import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
-import Link from "next/link";
+import { useAuthStore } from "@/stores/useAuthStore";
+import apiClient from "@/libs/apiClient";
 
 export default function LoginPage() {
+  const { setToken, setRefreshToken, setUser } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [usernameOrEmail, setUsernameOrEmail] = useState("devfrank");
+  const [password, setPassword] = useState("Password123!");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate login
-    setTimeout(() => {
+    setError(null);
+    
+    try {
+      const resp = await apiClient.post('/api/v1/auth/login', {
+        usernameOrEmail: usernameOrEmail,
+        password: password
+      });
+      
+      if (resp.status === 200) {
+        setToken(resp.data.token);
+        setRefreshToken(resp.data.refreshToken);
+        
+        // Fetch user data
+        try {
+          const userResp = await apiClient.get('/api/v1/auth/me', {
+            headers: { Authorization: `Bearer ${resp.data.token}` }
+          });
+          
+          if (userResp.status === 200 && userResp.data.data?.[0]) {
+            setUser(userResp.data.data[0]);
+          }
+        } catch (err) {
+          console.error("Failed to fetch user data:", err);
+        }
+        
+        window.location.href = '/';
+      }
+    } catch (err: any) {
+      console.error("Login error:", err);
+      setError(err.response?.data?.msg || "เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
+    } finally {
       setIsLoading(false);
-      // Redirect to dashboard
-      window.location.href = "/dashboard";
-    }, 1500);
+    }
   };
 
   return (
@@ -38,10 +68,17 @@ export default function LoginPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="p-8 space-y-6">
-            {/* Email Input */}
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                <p className="text-sm">{error}</p>
+              </div>
+            )}
+            
+            {/* usernameOrEmail Input */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                อีเมล
+                ชื่อผู้ใช้หรืออีเมล
               </label>
               <div className="relative">
                 <Mail
@@ -49,12 +86,13 @@ export default function LoginPage() {
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                 />
                 <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
+                  type="text"
+                  value={usernameOrEmail}
+                  onChange={(e) => setUsernameOrEmail(e.target.value)}
+                  placeholder="username หรือ email@example.com"
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                   required
+                  minLength={5}
                 />
               </div>
             </div>
@@ -76,6 +114,7 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                   required
+                  minLength={6}
                 />
                 <button
                   type="button"

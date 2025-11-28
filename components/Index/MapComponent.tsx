@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react';
 import '@/assets/Map.css';
 
 import BaseMapControl from './BaseMapControl';
-import { thailand_adm0 } from '@/actions/action';
+// import { thailand_adm0 } from '@/actions/action';
 
 
 export default function MapComponent() {
@@ -39,26 +39,26 @@ export default function MapComponent() {
 
     }
 
-    async function loadThaiGeojson() {
-      const geojson = await thailand_adm0()
-      // if (!res.ok) throw new Error();
-      // const geojson = await res.json();
+    // async function loadThaiGeojson() {
+    //   const geojson = await thailand_adm0()
+    //   // if (!res.ok) throw new Error();
+    //   // const geojson = await res.json();
 
-      mapInstance.current.addSource('thai-region', {
-        type: 'geojson',
-        data: geojson,
-      });
+    //   mapInstance.current.addSource('thai-region', {
+    //     type: 'geojson',
+    //     data: geojson,
+    //   });
 
-      mapInstance.current.addLayer({
-        id: 'RTA-thai-region-line',
-        type: 'line',
-        source: 'thai-region',
-        paint: {
-          'line-color': '#0000ff',
-          'line-width': 0.9,
-        },
-      });
-    }
+    //   mapInstance.current.addLayer({
+    //     id: 'RTA-thai-region-line',
+    //     type: 'line',
+    //     source: 'thai-region',
+    //     paint: {
+    //       'line-color': '#0000ff',
+    //       'line-width': 0.9,
+    //     },
+    //   });
+    // }
 
 
 

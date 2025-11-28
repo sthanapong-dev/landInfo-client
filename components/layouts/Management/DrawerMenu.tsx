@@ -1,6 +1,6 @@
 'use client';
 import { useCommonStore } from "@/stores/useCommonStore";
-import { ChevronLeft, ClockAlert, Database, LayoutGrid, Logs, Users } from "lucide-react";
+import { ChevronLeft, ClockAlert, Database, LayoutGrid, Logs, Users, UserStar } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
@@ -27,6 +27,11 @@ export default function DrawerMenu() {
             name: "จัดการข้อมูลผู้ใช้",
             icon: <Users />,
             href: "/management/users"
+        },
+        {
+            name: "จัดการบทบาทผู้ใช้",
+            icon: <UserStar />,
+            href: "/management/roles"
         },
         {
             name: "บันทึกการร้องเรียนระบบ",

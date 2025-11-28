@@ -1,9 +1,9 @@
-'use server';
+'use client';
 import NavbarComponents from "@/components/layouts/NavbarComponents";
 import DrawerMenu from "@/components/layouts/Management/DrawerMenu";
 import MainContent from "@/components/layouts/Management/MainContent";
 
-export default async function managementLayout({
+export default function managementLayout({
   children,
 }: {
   children: React.ReactNode;
