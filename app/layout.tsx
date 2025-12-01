@@ -2,7 +2,7 @@
 
 import { Kanit, } from "next/font/google";
 import "./globals.css";
-import AuthGuard from "@/components/guards/AuthGuard";
+
 
 const kanit = Kanit({
   subsets: ['latin', 'thai'],
@@ -22,11 +22,9 @@ export default function RootLayout({
       <body
         className={` ${kanit.variable} antialiased bg-gray-100`}
       >
-        <AuthGuard>
           <main>
             {children}
           </main>
-        </AuthGuard>
       </body>
     </html>
   );
