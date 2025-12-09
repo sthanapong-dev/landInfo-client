@@ -10,6 +10,8 @@
     "preview": "npx serve out"
   },
   "dependencies": {
+    "@mapbox/mapbox-gl-draw": "^1.5.0",
+    "@types/mapbox__mapbox-gl-draw": "^1.4.9",
     "axios": "^1.13.2",
     "dayjs": "^1.11.19",
     "dotenv": "^17.2.3",

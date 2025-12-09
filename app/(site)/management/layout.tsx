@@ -11,7 +11,7 @@ export default function managementLayout({
   return (
     <div className="w-full h-auto relative">
       <NavbarComponents />
-      <div className="pt-14 flex h-screen">
+      <div className="pt-14 flex h-auto text-gray-900">
         <DrawerMenu />
         <MainContent>
           {children}
